@@ -38,7 +38,11 @@ class custombackground(octoprint.plugin.AssetPlugin,
 			#file_object.save(self.get_plugin_data_folder() + "/uploaded" + extension)
 			octoprint.filemanager.util.StreamWrapper(self.get_plugin_data_folder() + "/uploaded" + extension, file_object.stream()).save(self.get_plugin_data_folder() + "/uploaded" + extension)
 			self._logger.info(self.get_plugin_data_folder() + "/uploaded" + extension)
-			self._settings.set(["background_url"],"/plugin/custombackground/uploaded" + extension)
+                        if  not "X-Script-Name" in request.headers:
+                                backgroundurl = "/plugin/custombackground/uploaded" + extension
+                        else:
+                                backgroundurl = request.headers["X-Script-Name"] + "/plugin/custombackground/uploaded" + extension
+			self._settings.set(["background_url"], backgroundurl + extension)
 			self._settings.save()
 			self._plugin_manager.send_plugin_message(self._identifier, dict(type="reload"))
 		return file_object
